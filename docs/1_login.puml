@@ -1,0 +1,48 @@
+@startuml
+
+hide footbox
+
+actor Élève as user
+participant Front as front
+participant Back as back
+database "Base de données" as db
+
+user -> front ++ : Saisie de formulaire
+    front -> front : Vérification du formulaire
+    alt Le formulaire n'est pas valide
+        front -[#red]-> user : <font color=red>Affichage d'un message d'erreur
+    else Le formulaire est valide
+        front -> back ++ : Soumission du formulaire
+
+            back -> back : Vérification des données formulaire
+            
+            alt Le formulaire n'est pas valide
+                back -[#red]-> front : <font color=red>Retour d'erreur
+                front -[#red]-> user : <font color=red>Affichage d'un message d'erreur
+
+            else Le formulaire est valide
+
+                back -> db ++ : Récupération des données correspondant à l'utilisateur
+                return Retour des données
+
+                alt Pas d'utilisateur trouvé OU les mots de passes ne correspondent pas
+                    back -[#red]-> front : <font color=red>Retour d'erreur
+                    front -[#red]-> user : <font color=red>Affichage d'un message d'erreur
+
+
+                else L'utilisateur correspond
+                    back -> back : Activation de la session
+                    return Retour de la session d'authentification
+
+                    front -> front : Sauvegarde de la session d'authentification
+
+                    return Connexion utilisateur effectuée
+                end
+
+                
+            end
+        
+    end
+    
+
+@enduml
